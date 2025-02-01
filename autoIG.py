@@ -29,7 +29,7 @@ def countdown(time_sec):
         ]
         for color in colors:
             print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-            time.sleep(0.5)
+            time.sleep(0.13)
                                   
     print("\r                          \r", end="") 
     print("\033[1;35mĐang Nhận Tiền         ",end = "\r")
