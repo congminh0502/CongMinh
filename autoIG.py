@@ -19,17 +19,17 @@ except ImportError:
 def countdown(time_sec):
     for remaining_time in range(time_sec, -1, -1):
         colors = [
-            "\033[1;37mH\033[1;36mu\033[1;35mo\033[1;32mn\033[1;31mg \033[1;34mD\033[1;33me\033[1;36mv\033[1;36m🍉 - Tool\033[1;36m Vip \033[1;31m\033[1;32m",
-            "\033[1;34mH\033[1;31mu\033[1;37mo\033[1;36mn\033[1;32mg \033[1;35mD\033[1;37me\033[1;33mv\033[1;32m🍉 - Tool\033[1;34m Vip \033[1;31m\033[1;32m",
-            "\033[1;31mH\033[1;37mu\033[1;36mo\033[1;33mn\033[1;35mg \033[1;32mD\033[1;34me\033[1;35mv\033[1;37m🍉 - Tool\033[1;33m Vip \033[1;31m\033[1;32m",
-            "\033[1;32mH\033[1;33mu\033[1;34mo\033[1;35mn\033[1;36mg \033[1;37mD\033[1;36me\033[1;31mv\033[1;34m🍉 - Tool\033[1;31m Vip \033[1;31m\033[1;32m",
-            "\033[1;37mH\033[1;34mu\033[1;35mo\033[1;36mn\033[1;32mg \033[1;33mD\033[1;31me\033[1;37mv\033[1;34m🍉 - Tool\033[1;37m Vip \033[1;31m\033[1;32m",
-            "\033[1;34mH\033[1;33mu\033[1;37mo\033[1;35mn\033[1;31mg \033[1;36mD\033[1;36me\033[1;32mv\033[1;37m🍉 - Tool\033[1;36m Vip \033[1;31m\033[1;32m",
-            "\033[1;36mH\033[1;35mu\033[1;31mo\033[1;34mn\033[1;37mg \033[1;35mD\033[1;32me\033[1;36mv\033[1;33m🍉 - Tool\033[1;33m Vip \033[1;31m\033[1;32m",
+            "\033[1;37mM\033[1;36mi\033[1;32mn\033[1;31mh \033[1;34mD\033[1;33me\033[1;36mv\033[1;36m🍉 - Tool\033[1;36m Vip \033[1;31m\033[1;32m",
+            "\033[1;34mM\033[1;31mi\033[1;36mn\033[1;32mh \033[1;35mD\033[1;37me\033[1;33mv\033[1;32m🍉 - Tool\033[1;34m Vip \033[1;31m\033[1;32m",
+            "\033[1;31mM\033[1;37mi\033[1;33mn\033[1;35mh \033[1;32mD\033[1;34me\033[1;35mv\033[1;37m🍉 - Tool\033[1;33m Vip \033[1;31m\033[1;32m",
+            "\033[1;32mM\033[1;33mi\033[1;35mn\033[1;36mh \033[1;37mD\033[1;36me\033[1;31mv\033[1;34m🍉 - Tool\033[1;31m Vip \033[1;31m\033[1;32m",
+            "\033[1;37mM\033[1;34mi\033[1;36mn\033[1;32mh \033[1;33mD\033[1;31me\033[1;37mv\033[1;34m🍉 - Tool\033[1;37m Vip \033[1;31m\033[1;32m",
+            "\033[1;34mM\033[1;33mi\033[1;35mn\033[1;31mh \033[1;36mD\033[1;36me\033[1;32mv\033[1;37m🍉 - Tool\033[1;36m Vip \033[1;31m\033[1;32m",
+            "\033[1;36mM\033[1;35mi\033[1;34mn\033[1;37mh \033[1;35mD\033[1;32me\033[1;36mv\033[1;33m🍉 - Tool\033[1;33m Vip \033[1;31m\033[1;32m",
         ]
         for color in colors:
             print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-            time.sleep(0.12)
+            time.sleep(0.5)
                                   
     print("\r                          \r", end="") 
     print("\033[1;35mĐang Nhận Tiền         ",end = "\r")
@@ -111,18 +111,7 @@ def INSTAGRAM():
         for i in range(choose):
             try:
                 job = f'https://gateway.golike.net/api/advertising/publishers/instagram/jobs?instagram_account_id={account_id}&data=null'
-                response = ses.get(job, headers=headers, params=param)
-        
-                try:
-                    nos = response.json()  # Chuyển đổi phản hồi thành JSON
-                except ValueError:
-                    print("Lỗi: API không trả về JSON hợp lệ.")
-                    print("Nội dung phản hồi:", response.text)  # Debug nội dung trả về
-                    continue  # Bỏ qua job này nếu phản hồi không hợp lệ
-
-                if 'status' not in nos:
-                    print("Lỗi: API không chứa 'status'. Dữ liệu nhận được:", nos)
-                    continue  # Bỏ qua job này nếu thiếu 'status'
+                nos = ses.get(job, headers=headers, params=param).json()
 
                 if nos['status'] == 200:
                     ads_id = nos['data']['id']
@@ -147,7 +136,7 @@ def INSTAGRAM():
                                 'async': True,
                                 'data': 'null',
                             }
-                            time.sleep(3)
+                            time.sleep(3.5)
                             response = requests.post(url, headers=headers, json=json_data).json()
 
                             if response.get('success') == True:
@@ -204,7 +193,7 @@ def INSTAGRAM():
                             'async': True,
                             'data':'null',
                             }
-                            time.sleep(3)
+                            time.sleep(3.5)
                             response = requests.post(
                             'https://gateway.golike.net/api/advertising/publishers/instagram/complete-jobs',
                             headers=headers,
