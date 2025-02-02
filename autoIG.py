@@ -113,7 +113,7 @@ def INSTAGRAM():
                 job = f'https://gateway.golike.net/api/advertising/publishers/instagram/jobs?instagram_account_id={account_id}&data=null'
                 nos = ses.get(job, headers=headers, params=param).json()
 
-                if nos['status'] == 200:
+                if 'status' in nos and nos['status'] == 200:
                     ads_id = nos['data']['id']
                     object_id = nos['data']['object_id']
                     job_type = nos['data']['type']
