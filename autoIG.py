@@ -136,7 +136,7 @@ def INSTAGRAM():
                                 'async': True,
                                 'data': 'null',
                             }
-                            time.sleep(2.5)
+                            time.sleep(3.5)
                             response = requests.post(url, headers=headers, json=json_data).json()
 
                             if response.get('success') == True:
