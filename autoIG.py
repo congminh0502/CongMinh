@@ -193,7 +193,7 @@ def INSTAGRAM():
                             'async': True,
                             'data':'null',
                             }
-                            time.sleep(2.5)
+                            time.sleep(3.5)
                             response = requests.post(
                             'https://gateway.golike.net/api/advertising/publishers/instagram/complete-jobs',
                             headers=headers,
