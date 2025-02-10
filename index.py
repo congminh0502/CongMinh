@@ -146,9 +146,9 @@ while True:
 	elif chon == '1.6':
 		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoTheads.py').text)
 	elif chon == '1.7':
-		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoLinkedin.py').text)
+		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/AutoLinkedin.py').text)
 	elif chon == '1.8':
-		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoLinkedin.py').text)
+		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/AutoLinkedin.py').text)
         
 		# TTC
 	elif chon == '2.1':
