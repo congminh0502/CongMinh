@@ -135,7 +135,7 @@ while True:
 	elif chon == '1.1':
 		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoTikTokv1.py').text)
 	elif chon == '1.2':
-		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoTikTokv2.py').text)
+		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/AutoTikTokv3.1.py').text)
 	elif chon == '1.3':
 		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/autoIG.py').text)
 
