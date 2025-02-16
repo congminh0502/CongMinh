@@ -184,7 +184,7 @@ while True:
         print("\033[1;35mSai Định Dạng !!!")
 
      
-  print(f'\033[1;97mĐang \033[1;96mLấy \033[1;95mNhiệm \033[1;91mVụ\033[1;93m Follow',end="\r")    
+  print(f'\033[1;97mĐang \033[1;96mLấy \033[1;95mNhiệm \033[1;91mVụ\033[1;93m Like',end="\r")    
   while True:
       try:  
           nhanjob = nhannv(account_id)
@@ -223,7 +223,7 @@ while True:
             ]
             for color in colors:
                 print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-                time.sleep(0.12)
+                time.sleep(0.2)
                         
                         
     print("\r                          \r", end="") 
