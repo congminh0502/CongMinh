@@ -29,7 +29,7 @@ def countdown(time_sec):
         ]
         for color in colors:
             print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-            time.sleep(0.13)
+            time.sleep(0.12)
                                   
     print("\r                          \r", end="") 
     print("\033[1;35mĐang Nhận Tiền         ",end = "\r")
@@ -136,7 +136,7 @@ def INSTAGRAM():
                                 'async': True,
                                 'data': 'null',
                             }
-                            time.sleep(3.5)
+                            time.sleep(3)
                             response = requests.post(url, headers=headers, json=json_data).json()
 
                             if response.get('success') == True:
@@ -193,7 +193,7 @@ def INSTAGRAM():
                             'async': True,
                             'data':'null',
                             }
-                            time.sleep(3.5)
+                            time.sleep(3)
                             response = requests.post(
                             'https://gateway.golike.net/api/advertising/publishers/instagram/complete-jobs',
                             headers=headers,
