@@ -1,5 +1,5 @@
 import json
-import requests, os, time
+import requests,os,time
 import socket
 from time import strftime
 from time import sleep
@@ -8,15 +8,15 @@ from bs4 import BeautifulSoup
 import time
 import sys
 banner = """
-\033[1;33m███    ███╗      ████████╗ █████╗  █████╗ ██╗
-\033[1;35m████  ████║      ╚══██╔══╝██╔══██╗██╔══██╗██║
-\033[1;36m██ ████ ██║ █████╗  ██║   ██║  ██║██║  ██║██║
-\033[1;37m██  ██  ██║ ╚════╝  ██║   ██║  ██║██║  ██║██║
+\033[1;33m██      ██╗      ████████╗ █████╗  █████╗ ██╗
+\033[1;35m██╗    ╔██║      ╚══██╔══╝██╔══██╗██╔══██╗██║
+\033[1;36m██║████║██║ █████╗  ██║   ██║  ██║██║  ██║██║
+\033[1;37m██║    ╚██║ ╚════╝  ██║   ██║  ██║██║  ██║██║
 \033[1;32m██║     ██║         ██║   ╚█████╔╝╚█████╔╝██████╗
 \033[1;31m╚═╝     ╚═╝         ╚═╝    ╚════╝  ╚════╝ ╚═════╝\n
-\033[1;97mTool By: \033[1;32mTrịnh Hướng            \033[1;97mPhiên Bản: \033[1;32m4.0     
+\033[1;97mTool remake By: \033[1;32mCông Minh            \033[1;97mPhiên Bản: \033[1;32m4.0     
 \033[97m════════════════════════════════════════════════  
-\033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Tool\033[1;31m     : \033[1;97m☞ \033[1;31mGolike - Instagram\033[1;33m♔ \033[1;97m🔫
+\033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Tool\033[1;31m     : \033[1;97m☞ \033[1;31mGolike - Tik Tok\033[1;33m♔ \033[1;97m🔫
 \033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Youtube\033[1;31m  : \033[1;97m☞ \033[1;36mMinh Hà công\033[1;31m♔ \033[1;97m☜
 \033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Tik Tok\033[1;31m  : \033[1;33mhttps:\033[1;32m//www.tiktok.com\033[1;31m/@mjng_ha
 \033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Facebook\033[1;31m : \033[1;97m☞\033[1;32mhttps://www.facebook.com/ha.cong.minh.556853🔫\033[1;97m☜
@@ -25,35 +25,35 @@ banner = """
 """
 os.system('cls' if os.name== 'nt' else 'clear')
 for x in banner:
-  print(x, end = "")
+  print(x,end = "")
   sleep(0.001)
 print("\033[1;31mYouTube : \033[1;33mHuong \033[1;33mDev\033[1;32m")   
 
     # Nhập auth
 try:
-  Authorization = open("Authorization.txt", "x")
-  t = open("token.txt", "x")
+  Authorization = open("Authorization.txt","x")
+  t = open("token.txt","x")
 except:
   pass
-Authorization = open("Authorization.txt", "r")
-t = open("token.txt", "r")
+Authorization = open("Authorization.txt","r")
+t = open("token.txt","r")
 author = Authorization.read()
 token = t.read()
 if author == "":
   author = input("\033[1;97mNHẬP AUTHORIZATION : ")
   token = input("\033[1;31mNHẬP T : ")
-  Authorization = open("Authorization.txt", "w")
-  t = open("token.txt", "w")
+  Authorization = open("Authorization.txt","w")
+  t = open("token.txt","w")
   Authorization.write(author)
   t.write(token)
 else:
   select = input("\033[1;97m║ Đăng\033[1;96m Nhập \033[1;95mTài \033[1;94mKhoản \033[1;93mHiện \033[1;92mCó\033[1;91m ( Enter Để Bỏ Qua ,Nhập AUTHORIZATION Tại Đây \033[1;97m║\033[1;91m Để Đổi )  \n\033[1;97m╚⟩⟩⟩ ")
-  
+
   if select != "":
     author = select
     token = input("\033[1;36mNhập T : ")
-    Authorization = open("Authorization.txt", "w")
-    t = open("token.txt", "w")
+    Authorization = open("Authorization.txt","w")
+    t = open("token.txt","w")
     Authorization.write(author)
     t.write(token)
 Authorization.close()
@@ -70,9 +70,9 @@ headers = {
 
 def chonacc():
   json_data = {}
+
   response = requests.get('https://gateway.golike.net/api/tiktok-account', headers=headers, json=json_data).json()
   return response
-
 def nhannv(account_id):
 
   params = {
@@ -82,9 +82,9 @@ def nhannv(account_id):
 
   json_data = {}
 
-  response = requests.get('https://gateway.golike.net/api/advertising/publishers/tiktok/jobs', params=params, headers=headers, json=json_data).json()
+  response = requests.get('https://gateway.golike.net/api/advertising/publishers/tiktok/jobs',params=params,headers=headers,json=json_data,).json()
   return response
-def hoanthanh(ads_id, account_id):
+def hoanthanh(ads_id,account_id):
   json_data = {
     'ads_id': ads_id,
     'account_id': account_id,
@@ -98,7 +98,7 @@ def hoanthanh(ads_id, account_id):
     json=json_data,
   ).json()
   return response
-def baoloi(ads_id, object_id, account_id, loai):
+def baoloi(ads_id,object_id,account_id,loai):
   json_data1 = {
     'description': 'Tôi đã làm Job này rồi',
     'users_advertising_id': ads_id,
@@ -107,9 +107,9 @@ def baoloi(ads_id, object_id, account_id, loai):
     'fb_id': account_id,
     'error_type': 6,
   }
-  
+
   response = requests.post('https://gateway.golike.net/api/report/send', headers=headers, json=json_data1).json()
-  
+
   json_data = {
     'ads_id': ads_id,
     'object_id': object_id,
@@ -125,13 +125,13 @@ def baoloi(ads_id, object_id, account_id, loai):
 
 chontktiktok = chonacc()  
 def dsacc():
-  if(chontktiktok["status"] != 200):
+  if chontktiktok.get("status") != 200:
     print("\033[1;34mAuthorization hoặc T sai hãy nhập lại!!!")
     quit()
+
   for i in range(len(chontktiktok["data"])):
-
+    # print(f'\033[1;97m•[✩]➭\033[1;36m [{i+1}] \033[1;91m=> \033[1;97mTên Tài Khoản┊\033[1;32m㊪ :\033[1;93m {chontktiktok["data"][i]["nickname"]}  ')
     print(f'\033[1;36m[{i+1}] \033[1;36m✈ \033[1;97mTài Khoản┊\033[1;32m㊪ :\033[1;93m {chontktiktok["data"][i]["nickname"]} \033[1;97m|\033[1;31m㊪ :\033[1;32m Hoạt Động')
-
 dsacc() 
 while True:
   try:
@@ -163,7 +163,7 @@ accloi = ""
 os.system('cls' if os.name== 'nt' else 'clear')
 
 for x in banner:
-  print(x, end = "")
+  print(x,end = "")
   sleep(0.001)
 print(f'\033[1;36m|STT\033[1;97m| \033[1;33mThời gian ┊ \033[1;32mStatus | \033[1;31mType Job | \033[1;32mID Acc | \033[1;32mXu |\033[1;33m Tổng')
 
@@ -182,9 +182,9 @@ while True:
         break  
       except:
         print("\033[1;35mSai Định Dạng !!!")
-        
+
      
-  print(f'\033[1;97mĐang \033[1;96mLấy \033[1;95mNhiệm \033[1;91mVụ\033[1;93m Like', end="\r")    
+  print(f'\033[1;97mĐang \033[1;96mLấy \033[1;95mNhiệm \033[1;91mVụ\033[1;93m Follow',end="\r")    
   while True:
       try:  
           nhanjob = nhannv(account_id)
@@ -203,12 +203,12 @@ while True:
   #       print("\033[1;31mHệ thống đang tính toán jobs dành cho bạn,bấm load jobs lại sau 10 giây !")
   #       pass
   #   time.sleep(1)
-  if(nhanjob["status"] == 200):
+  if nhanjob.get("status") == 200:
     ads_id = nhanjob["data"]["id"]
     link = nhanjob["data"]["link"]
     object_id = nhanjob["data"]["object_id"]
     if(nhanjob["data"]["type"] != "like"):
-      baoloi(ads_id, object_id, account_id, nhanjob["data"]["type"])
+      baoloi(ads_id,object_id,account_id,nhanjob["data"]["type"])
       continue
     os.system(f"termux-open-url {link}")
     for remaining_time in range(delay, -1, -1):
@@ -223,15 +223,16 @@ while True:
             ]
             for color in colors:
                 print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-                time.sleep(0.2)
-   
+                time.sleep(0.12)
+                        
                         
     print("\r                          \r", end="") 
-    print("\033[1;35mĐang Nhận Tiền         ", end="\r")
-    # Vòng lặp cố gắng nhận tiền với tối đa 2 lần thử
+    print("\033[1;35mĐang Nhận Tiền         ",end = "\r")
+# Vòng lặp cố gắng nhận tiền với tối đa 2 lần thử
     max_attempts = 2
     attempts = 0
     nhantien = None
+
     while attempts < max_attempts:
         try:
             nhantien = hoanthanh(ads_id, account_id)
@@ -239,9 +240,11 @@ while True:
                 break
         except:
             pass  # Bỏ qua ngoại lệ và thử lại nếu có
+
         attempts += 1  # Tăng số lần thử
+
     # Kiểm tra kết quả của việc nhận tiền
-    if nhantien and nhantien["status"] == 200:
+    if nhantien and nhantien.get("status") == 200:
         dem += 1
         tien = nhantien["data"]["prices"]
         tong += tien
@@ -258,12 +261,14 @@ while True:
             m = "0" + str(minute)
         if second < 10:
             s = "0" + str(second)
+
         chuoi = (f"\033[1;31m| \033[1;36m{dem}\033[1;31m\033[1;97m | "
                 f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
                 f"\033[1;32msuccess\033[1;31m\033[1;97m | "
                 f"\033[1;31m{nhantien['data']['type']}\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
                 f"\033[1;32m Ẩn ID\033[1;97m |\033[1;97m \033[1;32m+{tien} \033[1;97m| "
                 f"\033[1;33m{tong}")
+
         print("                                                    ", end="\r")
         print(chuoi)
         checkdoiacc = 0
@@ -280,3 +285,4 @@ while True:
             except:
                 qua = 0
                 pass
+
