@@ -136,7 +136,7 @@ def INSTAGRAM():
                                 'async': True,
                                 'data': 'null',
                             }
-                            time.sleep(3)
+                            time.sleep(2)
                             response = requests.post(url, headers=headers, json=json_data).json()
 
                             if response.get('success') == True:
@@ -193,7 +193,7 @@ def INSTAGRAM():
                             'async': True,
                             'data':'null',
                             }
-                            time.sleep(3)
+                            time.sleep(2)
                             response = requests.post(
                             'https://gateway.golike.net/api/advertising/publishers/instagram/complete-jobs',
                             headers=headers,
