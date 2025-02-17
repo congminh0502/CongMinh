@@ -27,7 +27,7 @@ os.system('cls' if os.name== 'nt' else 'clear')
 for x in banner:
   print(x,end = "")
   sleep(0.001)
-print("\033[1;31mYouTube : \033[1;33mHuong \033[1;33mDev\033[1;32m")   
+  
 
     # Nhập auth
 try:
@@ -223,7 +223,7 @@ while True:
             ]
             for color in colors:
                 print(f"\r{color}|{remaining_time}| \033[1;31m", end="")
-                time.sleep(0.2)
+                time.sleep(0.12)
                         
                         
     print("\r                          \r", end="") 
