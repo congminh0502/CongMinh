@@ -11,7 +11,7 @@ banner = """
 \033[1;37m██  ██  ██║ ╚════╝  ██║   ██║  ██║██║  ██║██║
 \033[1;32m██║     ██║         ██║   ╚█████╔╝╚█████╔╝██████╗
 \033[1;31m╚═╝     ╚═╝         ╚═╝    ╚════╝  ╚════╝ ╚═════╝\n
-\033[1;97mTool make By: \033[1;32mCông Minh            \033[1;97mPhiên Bản: \033[1;32m4.0     
+\033[1;97mTool remake By: \033[1;32mCông Minh            \033[1;97mPhiên Bản: \033[1;32m4.0     
 \033[97m════════════════════════════════════════════════  
 \033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Tool\033[1;31m     : \033[1;97m☞ \033[1;31mGolike - Instagram\033[1;33m♔ \033[1;97m🔫
 \033[1;97m[\033[1;91m❣\033[1;97m]\033[1;97m Youtube\033[1;31m  : \033[1;97m☞ \033[1;36mMinh Hà công\033[1;31m♔ \033[1;97m☜
@@ -24,7 +24,7 @@ banner = """
 os.system('cls' if os.name == 'nt' else 'clear')
 for x in banner:
     print(x, end="")
-    sleep(0.00125)
+    sleep(0.001)
 print("\033[1;31mYouTube : \033[1;33mCông \033[1;33mMinh\033[1;32m")   
 
 # Nhập Authorization và Token
@@ -66,6 +66,7 @@ headers = {
 # Hàm lấy danh sách tài khoản Instagram
 def chonacc():
     response = requests.get('https://gateway.golike.net/api/instagram-account', headers=headers).json()
+    print(response.json())
     return response
 
 # Hàm lấy nhiệm vụ Follow
