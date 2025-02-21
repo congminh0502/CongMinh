@@ -31,6 +31,7 @@ print("\033[1;31mYouTube : \033[1;33mHuong \033[1;33mDev\033[1;32m")
 
     # Nhập auth
 try:
+  
   Authorization = open("Authorization.txt","x")
   t = open("token.txt","x")
 except:
@@ -129,7 +130,9 @@ def dsacc():
     print("\033[1;34mAuthorization hoặc T sai hãy nhập lại!!!")
     quit()
 
-  for i in range(len(chontkinstagram["data"])):
+  for i, acc in enumerate(chontkinstagram.get("data", [])):
+    nickname = acc.get("nickname", "Không xác định")  # Nếu không có "nickname", gán giá trị mặc định
+
     # print(f'\033[1;97m•[✩]➭\033[1;36m [{i+1}] \033[1;91m=> \033[1;97mTên Tài Khoản┊\033[1;32m㊪ :\033[1;93m {chontktiktok["data"][i]["nickname"]}  ')
     print(f'\033[1;36m[{i+1}] \033[1;36m✈ \033[1;97mTài Khoản┊\033[1;32m㊪ :\033[1;93m {chontkinstagram["data"][i]["nickname"]} \033[1;97m|\033[1;31m㊪ :\033[1;32m Hoạt Động')
 dsacc() 
