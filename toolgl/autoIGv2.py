@@ -24,7 +24,7 @@ banner = """
 os.system('cls' if os.name == 'nt' else 'clear')
 for x in banner:
     print(x, end="")
-    sleep(0.0012)
+    sleep(0.00125)
 print("\033[1;31mYouTube : \033[1;33mCông \033[1;33mMinh\033[1;32m")   
 
 # Nhập Authorization và Token
