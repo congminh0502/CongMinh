@@ -140,7 +140,7 @@ while True:
 		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/autoIG.py').text)
 
 	elif chon == '1.4':
-		exec(requests.get('https://raw.githubusercontent.com/congminh0502/CongMinh/refs/heads/main/toolgl/AutoX.py').text)
+		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoX.py').text)
 	elif chon == '1.5':
 		exec(requests.get('https://raw.githubusercontent.com/huongdev6868/HuongDev/refs/heads/main/Full%20Golike/AutoYTB.py').text)
 	elif chon == '1.6':
