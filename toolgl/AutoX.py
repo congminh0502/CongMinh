@@ -72,7 +72,7 @@ def TWITTER():
         checkfile = os.path.isfile('AUTH'+str(account_id)+'.txt')
         if checkfile == False:
             banner()
-            AUTHURX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Authorization Golike : ')
+            AUTHURX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Authorization Twitter : ')
             createfile = open('AUTH'+str(account_id)+'.txt','w')
             createfile.write(AUTHURX)
             createfile.close()
@@ -171,10 +171,10 @@ def TWITTER():
                                     tong += prices
 
                                     chuoi = (
-                                        f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                        f"\033[1;31m\| 033[1;36m{dem}\033[1;31m\033[1;97m | "
                                         f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
                                         f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                        f"\033[1;31mfollow\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
+                                        f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
                                         f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
                                         f"\033[1;33m{tong} vnđ"
                                     )
@@ -279,10 +279,10 @@ def TWITTER():
                                     tong += prices
 
                                     chuoi = (
-                                        f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                        f"\033[1;31m\| 033[1;36m{dem}\033[1;31m\033[1;97m | "
                                         f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
                                         f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                        f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
+                                        f"\033[1;31mfollow\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
                                         f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
                                         f"\033[1;33m{tong} vnđ"
                                     )
