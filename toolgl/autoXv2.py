@@ -109,35 +109,26 @@ def TWITTER():
         return
 
     # --- Xử lý Authorization và Cookie ---
-    checkfile = os.path.isfile('AUTH'+str(account_id)+'.txt')
-    checkfile2 = os.path.isfile('COOKIE'+str(account_id)+'.txt')
-    if checkfile == False:
-            banner()
-            AUTHURX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Authorization Golike : ')
-            auth_file = open('AUTH'+str(account_id)+'.txt','w')
-            auth_file.write(AUTHURX)
-            auth_file.close()
-            readfile = open('AUTH'+str(account_id)+'.txt','r')
-            AUTHURX = readfile.read()
-            readfile.close()
+     # --- Xử lý Authorization và Cookie ---
+    auth_file = 'AUTH' + str(account_id) + '.txt'
+    if not os.path.isfile(auth_file):
+        banner()
+        AUTHURX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Authorization Twitter: ')
+        with open(auth_file, 'w') as f:
+            f.write(AUTHURX)
     else:
-            readfile = open('AUTH'+str(account_id)+'.txt','r')
-            AUTHURX = readfile.read()
-            readfile.close()
-            checkfile2 = os.path.isfile('COOKIE'+str(account_id)+'.txt')
-    if checkfile2 == False:
-            banner()
-            cookieX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Cookie Twitter : ')
-            createfile = open('COOKIE'+str(account_id)+'.txt','w')
-            createfile.write(cookieX)
-            createfile.close()
-            readfile = open('COOKIE'+str(account_id)+'.txt','r')
-            cookieX = readfile.read()
-            readfile.close()
+        with open(auth_file, 'r') as f:
+            AUTHURX = f.read().strip()
+
+    cookie_file = 'COOKIE' + str(account_id) + '.txt'
+    if not os.path.isfile(cookie_file):
+        banner()
+        cookieX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Cookie Twitter : ')
+        with open(cookie_file, 'w') as f:
+            f.write(cookieX)
     else:
-            readfile = open('COOKIE'+str(account_id)+'.txt','r')
-            cookieX = readfile.read()
-            readfile.close()
+        with open(cookie_file, 'r') as f:
+            cookieX = f.read().strip()
             
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
