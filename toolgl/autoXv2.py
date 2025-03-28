@@ -99,7 +99,7 @@ def TWITTER():
     print(Fore.RED + '_________________________________________________________')
     choose = int(input('\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Tài Khoản : '))
     os.system('cls' if os.name == 'nt' else 'clear')
-    if 1 >= choose <= len(user_twitter1):
+    if 1 <= choose <= len(user_twitter1):
         user_twitter1 = user_twitter1[choose - 1:choose]
         account_id1 = account_id1[choose - 1:choose]
         user_tiktok = user_twitter1[0]
