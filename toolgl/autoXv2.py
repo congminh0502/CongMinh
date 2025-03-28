@@ -109,30 +109,35 @@ def TWITTER():
         return
 
     # --- Xử lý Authorization và Cookie ---
-    auth_file = 'AUTH' + str(account_id) + '.txt'
-    cookie_file = 'COOKIE' + str(account_id) + '.txt'
     
-    if not os.path.isfile(auth_file):
-        banner()  # Giả định hàm banner() đã được định nghĩa trước
-        AUTHURX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Authorization Twitter: ')
-        with open(auth_file, 'w') as createfile:
-            createfile.write(AUTHURX)
-        with open(auth_file, 'r') as readfile:
+    
+    if checkfile == False:
+            banner()
+            AUTHURX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Authorization Golike : ')
+            auth_file = open('AUTH'+str(account_id)+'.txt','w')
+            auth_file.write(AUTHURX)
+            auth_file.close()
+            readfile = open('AUTH'+str(account_id)+'.txt','r')
             AUTHURX = readfile.read()
+            readfile.close()
     else:
-        with open(auth_file, 'r') as readfile:
+            readfile = open('AUTH'+str(account_id)+'.txt','r')
             AUTHURX = readfile.read()
-
-    if not os.path.isfile(cookie_file):
-        banner()
-        cookieX = input(Fore.GREEN + '\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Cookie Twitter : ')
-        with open(cookie_file, 'w') as createfile:
+            readfile.close()
+            checkfile2 = os.path.isfile('COOKIE'+str(account_id)+'.txt')
+    if checkfile2 == False:
+            banner()
+            cookieX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Cookie Twitter : ')
+            createfile = open('COOKIE'+str(account_id)+'.txt','w')
             createfile.write(cookieX)
-        with open(cookie_file, 'r') as readfile:
+            createfile.close()
+            readfile = open('COOKIE'+str(account_id)+'.txt','r')
             cookieX = readfile.read()
+            readfile.close()
     else:
-        with open(cookie_file, 'r') as readfile:
+            readfile = open('COOKIE'+str(account_id)+'.txt','r')
             cookieX = readfile.read()
+            readfile.close()
             
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
@@ -167,7 +172,7 @@ def TWITTER():
     # Kiểm tra cookie Twitter trước khi chạy job
     if not is_cookie_alive(headersX):
         print(Fore.RED + "Cookie die! Vui lòng nhập lại cookie.")
-        os.remove(cookie_file)
+        os.remove(cookieX)
         return TWITTER()
 
     # Xử lý từng job
@@ -219,7 +224,7 @@ def TWITTER():
                     elif 'errors' in str(node) and 'Could not authenticate you' in str(node):
                         print("HẾT HẠN COOKIE")
                         time.sleep(2)
-                        os.remove(cookie_file)
+                        os.remove(cookieX)
                         return 0
                 
                 elif type_job == 'follow':
@@ -293,7 +298,7 @@ def TWITTER():
                     elif 'errors' in str(response2) and 'Could not authenticate you' in str(response2):
                         print("Cookie Die Đổi Tài Khoản Khác Chạy Đê")
                         time.sleep(2)
-                        os.remove(cookie_file)
+                        os.remove(cookieX)
                         os.remove(auth_file)
                         return 0
                 
@@ -404,7 +409,7 @@ def TWITTER():
                     elif 'errors' in str(cf) and 'Could not authenticate you' in str(cf):
                         print("HET HAN COOKIE")
                         time.sleep(2)
-                        os.remove(cookie_file)
+                        os.remove(cookieX)
                         return 0
             else:
                 print(nos['message'])
