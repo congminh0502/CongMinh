@@ -66,16 +66,15 @@ def TWITTER():
             print(Fore.RED + f"[❌] POST lỗi: {e}")
             return {}
 
-
     # Kiểm tra cookie còn sống bằng cách gọi API settings của Twitter
     def is_cookie_alive(headers_tw):
         test_url = "https://x.com/i/api/1.1/account/settings.json"
         res = safe_json(requests.get(test_url, headers=headers_tw, timeout=10))
         return bool(res)
 
-    # --- Phần lấy danh sách tài khoản từ GoLike ---
+    # --- Phần lấy danh sách tài khoản từ GoLike (giữ nguyên logic cũ) ---
     url1_2 = 'https://gateway.golike.net/api/twitter-account'
-    checkurl1_2 = safe_json(requests.get(url1_2, headers=headers))  # Giả định headers đã được định nghĩa trước
+    checkurl1_2 = safe_json(ses.get(url1_2, headers=headers))
     user_twitter1 = []
     account_id1 = []
     account = []
@@ -109,36 +108,33 @@ def TWITTER():
         return
 
     # --- Xử lý Authorization và Cookie ---
-    auth_file = f'AUTH{account_id}.txt'
-    cookie_file = f'COOKIE{account_id}.txt'
-
-    # Authorization Twitter
-    if os.path.isfile(auth_file):
-        with open(auth_file, 'r') as f:
-            AUTHURX = f.read().strip()
-    else:
+    auth_file = 'AUTH' + str(account_id) + '.txt'
+    if not os.path.isfile(auth_file):
         banner()
         AUTHURX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Authorization Twitter: ')
         with open(auth_file, 'w') as f:
             f.write(AUTHURX)
-
-    # Cookie Twitter
-    if os.path.isfile(cookie_file):
-        with open(cookie_file, 'r') as f:
-            cookieX = f.read().strip()
     else:
+        with open(auth_file, 'r') as f:
+            AUTHURX = f.read().strip()
+
+    cookie_file = 'COOKIE' + str(account_id) + '.txt'
+    if not os.path.isfile(cookie_file):
         banner()
         cookieX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Cookie Twitter : ')
         with open(cookie_file, 'w') as f:
             f.write(cookieX)
-            
+    else:
+        with open(cookie_file, 'r') as f:
+            cookieX = f.read().strip()
+
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
-    job_count = int(input(Fore.RED+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Số Lượng Job : '))
-    DELAY = int(input(Fore.RED+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Delay : '))
+    job_count = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Số Lượng Job : '))
+    DELAY = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Delay : '))
     print("\033[97m════════════════════════════════════════════════")
 
-    # Tạo headers cho Twitter
+    # Tạo headers cho Twitter dựa trên cookie và token (dùng UA từ biến User_Agent của bạn)
     headersX = {
         'accept': '*/*',
         'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
@@ -153,7 +149,7 @@ def TWITTER():
         'sec-fetch-dest': 'empty',
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-origin',
-        'user-agent': User_Agent,  # Giả định User_Agent đã được định nghĩa trước
+        'user-agent': User_Agent,
         'x-client-transaction-id': 'urp5610yhQLkM+CVhUdxse7V6km/w/d0jxm8ReTQ0zYMv9OrPxn4mhIlXHxcu5p9VeJWjLh903OGJv8VyMwdt6Mnr31KuQ',
         'x-client-uuid': '8a14d42e-d7a8-4d47-9e60-cd596f91ad4b',
         'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0] if 'ct0=' in cookieX else '',
@@ -165,19 +161,18 @@ def TWITTER():
     # Kiểm tra cookie Twitter trước khi chạy job
     if not is_cookie_alive(headersX):
         print(Fore.RED + "Cookie die! Vui lòng nhập lại cookie.")
-        os.remove(cookieX)
+        os.remove(cookie_file)
         return TWITTER()
 
     # Xử lý từng job
     for j in range(job_count):
         try:
             job_url = f'https://gateway.golike.net/api/advertising/publishers/twitter/jobs?account_id={account_id}'
-            nos = safe_json(requests.get(job_url, headers=headers))  # Giả định headers đã được định nghĩa trước
+            nos = safe_json(ses.get(job_url, headers=headers))
             if nos.get('status') == 200:
                 ads_id = nos['data']['id']
                 object_id = nos['data']['object_id']
                 type_job = nos['data']['type']
-                
                 if type_job == 'like':
                     url = 'https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet'
                     json_data = {
@@ -209,17 +204,16 @@ def TWITTER():
                         else:
                             skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
                             PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
-                                    'async': 'true', 'data': 'null', 'type': type_job}
-                            checkskipjob = safe_json(requests.post(skipjob, params=PARAMS, timeout=10))
+                                      'async': 'true', 'data': 'null', 'type': type_job}
+                            checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
                             if checkskipjob.get('status') == 200:
                                 message = checkskipjob.get('message', '')
                                 print(Fore.RED + str(message))
                     elif 'errors' in str(node) and 'Could not authenticate you' in str(node):
                         print("HẾT HẠN COOKIE")
                         time.sleep(2)
-                        os.remove(cookieX)
+                        os.remove(cookie_file)
                         return 0
-                
                 elif type_job == 'follow':
                     url = 'https://x.com/i/api/1.1/friendships/create.json'
                     headersY = {
@@ -258,7 +252,8 @@ def TWITTER():
                         'skip_status': '1',
                         'user_id': object_id,
                     }
-                    response2 = safe_json(requests.post(url, headers=headersY, data=data, timeout=10))
+                    response2 = safe_json(requests.post('https://x.com/i/api/1.1/friendships/create.json',
+                                                         headers=headersY, data=data, timeout=10))
                     countdown(DELAY)
                     if 'id' in str(response2):
                         complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
@@ -283,18 +278,16 @@ def TWITTER():
                         else:
                             skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
                             PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
-                                    'async': 'true', 'data': 'null', 'type': type_job}
-                            checkskipjob = safe_json(requests.post(skipjob, params=PARAMS, timeout=10))
+                                      'async': 'true', 'data': 'null', 'type': type_job}
+                            checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
                             if checkskipjob.get('status') == 200:
                                 message = checkskipjob.get('message', '')
                                 print(Fore.RED + str(message))
                     elif 'errors' in str(response2) and 'Could not authenticate you' in str(response2):
-                        print("Cookie Die Đổi Tài Khoản Khác Chạy Đê")
+                        print("Cookie Die Đổi Tài Khản Khác Chạy Đê")
                         time.sleep(2)
-                        os.remove(cookieX)
-                        os.remove(auth_file)
+                        os.remove(cookie_file)
                         return 0
-                
                 elif type_job == 'comment':
                     comment = nos['lock']['message']
                     url = 'https://x.com/i/api/graphql/oB-5XsHNAbjvARJEc8CZFw/CreateTweet'
@@ -355,20 +348,14 @@ def TWITTER():
                         },
                         'queryId': 'oB-5XsHNAbjvARJEc8CZFw'
                     }
-                    cf = requests.post(url, headers=headersZ, json=json_data).json()
+                    cf = safe_json(requests.post(url, headers=headersZ, json=json_data, timeout=10))
                     countdown(DELAY)
                     if 'create_tweet' in str(cf) or 'Authorization: Status is a duplicate.' in str(cf):
-                        url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
-                        json_data = {
-                            'ads_id': ads_id,
-                            'account_id': account_id,
-                            'async': True,
-                            'comment_id': nos['lock']['comment_id'],
-                            'message': comment,
-                        }
+                        complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
+                        json_data = {'ads_id': ads_id, 'account_id': account_id, 'async': True, 'comment_id': nos['lock']['comment_id'], 'message': comment}
                         time.sleep(3)
-                        response = requests.post(url, headers=headers, json=json_data).json()
-                        if response['success'] == True:
+                        response = safe_json(requests.post(complete_url, headers=headers, json=json_data, timeout=10))
+                        if response.get('success') == True:
                             dem += 1
                             local_time = time.localtime()
                             h = f"{local_time.tm_hour:02d}"
@@ -410,6 +397,7 @@ def TWITTER():
         except Exception as e:
             print(Fore.RED + f"Lỗi: {e}")
             continue
+
 
 
 def banner():
