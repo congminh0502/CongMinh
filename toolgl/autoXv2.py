@@ -109,8 +109,8 @@ def TWITTER():
         return
 
     # --- Xử lý Authorization và Cookie ---
-    
-    
+    checkfile = os.path.isfile('AUTH'+str(account_id)+'.txt')
+    checkfile2 = os.path.isfile('COOKIE'+str(account_id)+'.txt')
     if checkfile == False:
             banner()
             AUTHURX = input(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mNHẬP Authorization Golike : ')
