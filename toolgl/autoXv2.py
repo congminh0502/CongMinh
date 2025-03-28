@@ -109,26 +109,28 @@ def TWITTER():
         return
 
     # --- Xử lý Authorization và Cookie ---
-     # --- Xử lý Authorization và Cookie ---
-    auth_file = 'AUTH' + str(account_id) + '.txt'
-    if not os.path.isfile(auth_file):
+    auth_file = f'AUTH{account_id}.txt'
+    cookie_file = f'COOKIE{account_id}.txt'
+
+    # Authorization Twitter
+    if os.path.isfile(auth_file):
+        with open(auth_file, 'r') as f:
+            AUTHURX = f.read().strip()
+    else:
         banner()
         AUTHURX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Authorization Twitter: ')
         with open(auth_file, 'w') as f:
             f.write(AUTHURX)
-    else:
-        with open(auth_file, 'r') as f:
-            AUTHURX = f.read().strip()
 
-    cookie_file = 'COOKIE' + str(account_id) + '.txt'
-    if not os.path.isfile(cookie_file):
+    # Cookie Twitter
+    if os.path.isfile(cookie_file):
+        with open(cookie_file, 'r') as f:
+            cookieX = f.read().strip()
+    else:
         banner()
         cookieX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Cookie Twitter : ')
         with open(cookie_file, 'w') as f:
             f.write(cookieX)
-    else:
-        with open(cookie_file, 'r') as f:
-            cookieX = f.read().strip()
             
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
