@@ -136,8 +136,8 @@ def TWITTER():
             
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
-    job_count = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Số Lượng Job : '))
-    DELAY = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Delay : '))
+    job_count = int(input(Fore.RED+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Số Lượng Job : '))
+    DELAY = int(input(Fore.RED+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Delay : '))
     print("\033[97m════════════════════════════════════════════════")
 
     # Tạo headers cho Twitter
@@ -294,6 +294,7 @@ def TWITTER():
                         print("Cookie Die Đổi Tài Khoản Khác Chạy Đê")
                         time.sleep(2)
                         os.remove(cookie_file)
+                        os.remove(auth_file)
                         return 0
                 
                 elif type_job == 'comment':
@@ -739,7 +740,7 @@ if checkurl1['status']== 200 :
         print(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mTài Khoản : '+Fore.YELLOW+username)
         print(Fore.GREEN+'\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  \033[1;32mTổng Tiền : '+Fore.YELLOW+str(coin))
         print(Fore.RED+'\033[97m════════════════════════════════════════════════')
-        print("\033[1;32mNhập \033[1;31m1 \033[1;33mđể vào \033[1;34mTool Instagram\033[1;33m")
+        print("\033[1;32mNhập \033[1;31m1 \033[1;33mđể vào \033[1;34mTool Twitter\033[1;33m")
         print(Fore.RED+'Nhập 2 Để Xóa Authorization Hiện Tại')
         choose = int(input(Fore.WHITE+'Nhập Lựa Chọn : '))
         if choose == 1:
