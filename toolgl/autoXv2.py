@@ -42,7 +42,7 @@ def countdown(time_sec):
     #     time.sleep(1)
     #     time_sec -= 1
 def TWITTER():
-    import os, time, requests
+    import os, time, requests, random
     from colorama import Fore
 
     # Hàm an toàn để parse JSON (bắt lỗi JSONDecodeError)
@@ -66,13 +66,15 @@ def TWITTER():
             print(Fore.RED + f"[❌] POST lỗi: {e}")
             return {}
 
+    
+
     # Kiểm tra cookie còn sống bằng cách gọi API settings của Twitter
     def is_cookie_alive(headers_tw):
         test_url = "https://x.com/i/api/1.1/account/settings.json"
         res = safe_json(requests.get(test_url, headers=headers_tw, timeout=10))
         return bool(res)
 
-    # --- Phần lấy danh sách tài khoản từ GoLike (giữ nguyên logic cũ) ---
+    # --- Lấy danh sách tài khoản từ GoLike (giữ nguyên logic gốc) ---
     url1_2 = 'https://gateway.golike.net/api/twitter-account'
     checkurl1_2 = safe_json(ses.get(url1_2, headers=headers))
     user_twitter1 = []
@@ -96,16 +98,20 @@ def TWITTER():
               f'\033[1;32m㊪ :\033[1;93m {STATUS[-1]}\n')
         i += 1
     print(Fore.RED + '_________________________________________________________')
-    choose = int(input('\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Tài Khoản : '))
-    os.system('cls' if os.name == 'nt' else 'clear')
-    if 1 <= choose <= len(user_twitter1):
-        user_twitter1 = user_twitter1[choose - 1:choose]
-        account_id1 = account_id1[choose - 1:choose]
-        user_tiktok = user_twitter1[0]
-        account_id = account_id1[0]
-    else:
-        print(Fore.RED + "Chọn tài khoản không hợp lệ!")
+    try:
+        choose = int(input('\033[1;97m[\033[1;91m❣\033[1;97m] \033[1;36m✈  Nhập Tài Khoản : '))
+        if not (1 <= choose <= len(user_twitter1)):
+            print(Fore.RED + "Chọn tài khoản không hợp lệ!")
+            return
+    except ValueError:
+        print(Fore.RED + "Giá trị nhập không hợp lệ!")
         return
+
+    os.system('cls' if os.name == 'nt' else 'clear')
+    user_twitter1 = user_twitter1[choose - 1:choose]
+    account_id1 = account_id1[choose - 1:choose]
+    user_tiktok = user_twitter1[0]
+    account_id = account_id1[0]
 
     # --- Xử lý Authorization và Cookie ---
     auth_file = 'AUTH' + str(account_id) + '.txt'
@@ -113,7 +119,7 @@ def TWITTER():
         banner()
         AUTHURX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Authorization Twitter: ')
         with open(auth_file, 'w') as f:
-            f.write(AUTHURX)
+            f.write(AUTHURX.strip())
     else:
         with open(auth_file, 'r') as f:
             AUTHURX = f.read().strip()
@@ -123,15 +129,19 @@ def TWITTER():
         banner()
         cookieX = input(Fore.GREEN + '\033[1;97m[❣] ✈  NHẬP Cookie Twitter : ')
         with open(cookie_file, 'w') as f:
-            f.write(cookieX)
+            f.write(cookieX.strip())
     else:
         with open(cookie_file, 'r') as f:
             cookieX = f.read().strip()
 
     os.system('cls' if os.name == 'nt' else 'clear')
     banner()
-    job_count = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Số Lượng Job : '))
-    DELAY = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Delay : '))
+    try:
+        job_count = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Số Lượng Job : '))
+        DELAY = int(input(Fore.RED + '\033[1;97m[❣] ✈  Nhập Delay : '))
+    except ValueError:
+        print(Fore.RED + "Giá trị nhập không hợp lệ!")
+        return
     print("\033[97m════════════════════════════════════════════════")
 
     # Tạo headers cho Twitter dựa trên cookie và token (dùng UA từ biến User_Agent của bạn)
@@ -160,8 +170,11 @@ def TWITTER():
 
     # Kiểm tra cookie Twitter trước khi chạy job
     if not is_cookie_alive(headersX):
-        print(Fore.RED + "Cookie die! Vui lòng nhập lại cookie.")
-        os.remove(cookie_file)
+        print(Fore.RED + "Cookie die! Vui lòng nhập lại cookie và Authorization.")
+        if os.path.exists(cookie_file):
+            os.remove(cookie_file)
+        if os.path.exists(auth_file):
+            os.remove(auth_file)
         return TWITTER()
 
     # Xử lý từng job
@@ -169,234 +182,296 @@ def TWITTER():
         try:
             job_url = f'https://gateway.golike.net/api/advertising/publishers/twitter/jobs?account_id={account_id}'
             nos = safe_json(ses.get(job_url, headers=headers))
-            if nos.get('status') == 200:
-                ads_id = nos['data']['id']
-                object_id = nos['data']['object_id']
-                type_job = nos['data']['type']
-                if type_job == 'like':
-                    url = 'https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet'
-                    json_data = {
-                        'variables': {'tweet_id': object_id},
-                        'queryId': 'lI07N6Otwv1PhnEgXILM7A'
-                    }
-                    node = safe_json(requests.post(url, headers=headersX, json=json_data, timeout=10))
-                    countdown(DELAY)
-                    if 'data' in str(node) or 'has already favorited tweet' in str(node):
-                        complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
-                        json_data_complete = {'ads_id': ads_id, 'account_id': account_id, 'async': True}
-                        time.sleep(3)
-                        response3 = safe_json(requests.post(complete_url, headers=headers, json=json_data_complete, timeout=10))
-                        if response3.get('success') == True:
-                            dem += 1
-                            local_time = time.localtime()
-                            h = f"{local_time.tm_hour:02d}"
-                            m = f"{local_time.tm_min:02d}"
-                            s = f"{local_time.tm_sec:02d}"
-                            prices = response3['data']['prices']
-                            tong += prices
-                            chuoi = (f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
-                                     f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
-                                     f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                     f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
-                                     f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
-                                     f"\033[1;33m{tong} vnđ")
-                            print(chuoi)
-                        else:
-                            skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
-                            PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
-                                      'async': 'true', 'data': 'null', 'type': type_job}
-                            checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
-                            if checkskipjob.get('status') == 200:
-                                message = checkskipjob.get('message', '')
-                                print(Fore.RED + str(message))
-                    elif 'errors' in str(node) and 'Could not authenticate you' in str(node):
-                        print("HẾT HẠN COOKIE")
-                        time.sleep(2)
-                        os.remove(cookie_file)
-                        return 0
-                elif type_job == 'follow':
-                    url = 'https://x.com/i/api/1.1/friendships/create.json'
-                    headersY = {
-                        'accept': '*/*',
-                        'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
-                        'authorization': AUTHURX,
-                        'content-type': 'application/x-www-form-urlencoded',
-                        'cookie': cookieX,
-                        'origin': 'https://x.com',
-                        'priority': 'u=1, i',
-                        'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-                        'sec-ch-ua-mobile': '?1',
-                        'sec-ch-ua-platform': '"Android"',
-                        'sec-fetch-dest': 'empty',
-                        'sec-fetch-mode': 'cors',
-                        'sec-fetch-site': 'same-origin',
-                        'user-agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36',
-                        'x-client-transaction-id': 'MPwo7xERotqe3xFS4oEGGDju3YMFR9v2gW2dSTZ/c2S4KYhQfp5ZmZYR/KcwzeyIYp3GBjKulQYFzsWftgEm6c7v0StkMw',
-                        'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
-                        'x-twitter-active-user': 'yes',
-                        'x-twitter-auth-type': 'OAuth2Session',
-                        'x-twitter-client-language': 'en',
-                    }
-                    data = {
-                        'include_profile_interstitial_type': '1',
-                        'include_blocking': '1',
-                        'include_blocked_by': '1',
-                        'include_followed_by': '1',
-                        'include_want_retweets': '1',
-                        'include_mute_edge': '1',
-                        'include_can_dm': '1',
-                        'include_can_media_tag': '1',
-                        'include_ext_is_blue_verified': '1',
-                        'include_ext_verified_type': '1',
-                        'include_ext_profile_image_shape': '1',
-                        'skip_status': '1',
-                        'user_id': object_id,
-                    }
-                    response2 = safe_json(requests.post('https://x.com/i/api/1.1/friendships/create.json',
-                                                         headers=headersY, data=data, timeout=10))
-                    countdown(DELAY)
-                    if 'id' in str(response2):
-                        complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
-                        json_data = {'ads_id': ads_id, 'account_id': account_id, 'async': True}
-                        time.sleep(3)
-                        response = safe_json(requests.post(complete_url, headers=headers, json=json_data, timeout=10))
-                        if response.get('success') == True:
-                            dem += 1
-                            local_time = time.localtime()
-                            h = f"{local_time.tm_hour:02d}"
-                            m = f"{local_time.tm_min:02d}"
-                            s = f"{local_time.tm_sec:02d}"
-                            prices = response['data']['prices']
-                            tong += prices
-                            chuoi = (f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
-                                     f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
-                                     f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                     f"\033[1;31mfollow\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
-                                     f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
-                                     f"\033[1;33m{tong} vnđ")
-                            print(chuoi)
-                        else:
-                            skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
-                            PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
-                                      'async': 'true', 'data': 'null', 'type': type_job}
-                            checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
-                            if checkskipjob.get('status') == 200:
-                                message = checkskipjob.get('message', '')
-                                print(Fore.RED + str(message))
-                    elif 'errors' in str(response2) and 'Could not authenticate you' in str(response2):
-                        print("Cookie Die Đổi Tài Khản Khác Chạy Đê")
-                        time.sleep(2)
-                        os.remove(cookie_file)
-                        return 0
-                elif type_job == 'comment':
-                    comment = nos['lock']['message']
-                    url = 'https://x.com/i/api/graphql/oB-5XsHNAbjvARJEc8CZFw/CreateTweet'
-                    headersZ = {
-                        'accept': '*/*',
-                        'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
-                        'authorization': AUTHURX,
-                        'content-type': 'application/json',
-                        'cookie': cookieX,
-                        'origin': 'https://x.com',
-                        'priority': 'u=1, i',
-                        'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-                        'sec-ch-ua-mobile': '?1',
-                        'sec-ch-ua-platform': '"Android"',
-                        'sec-fetch-dest': 'empty',
-                        'sec-fetch-mode': 'cors',
-                        'sec-fetch-site': 'same-origin',
-                        'user-agent': User_Agent,
-                        'x-client-transaction-id': 'urp5610yhQLkM+CVhUdxse7V6km/w/d0jxm8ReTQ0zYMv9OrPxn4mhIlXHxcu5p9VeJWjLh903OGJv8VyMwdt6Mnr31KuQ',
-                        'x-client-uuid': '8a14d42e-d7a8-4d47-9e60-cd596f91ad4b',
-                        'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
-                        'x-twitter-active-user': 'yes',
-                        'x-twitter-auth-type': 'OAuth2Session',
-                        'x-twitter-client-language': 'en',
-                    }
-                    json_data = {
-                        'variables': {
-                            'tweet_text': comment,
-                            'reply': {'in_reply_to_tweet_id': object_id, 'exclude_reply_user_ids': []},
-                            'dark_request': False,
-                            'media': {'media_entities': [], 'possibly_sensitive': False},
-                            'semantic_annotation_ids': []
-                        },
-                        'features': {
-                            'communities_web_enable_tweet_community_results_fetch': True,
-                            'c9s_tweet_anatomy_moderator_badge_enabled': True,
-                            'tweetypie_unmention_optimization_enabled': True,
-                            'responsive_web_edit_tweet_api_enabled': True,
-                            'graphql_is_translatable_rweb_tweet_is_translatable_enabled': True,
-                            'view_counts_everywhere_api_enabled': True,
-                            'longform_notetweets_consumption_enabled': True,
-                            'responsive_web_twitter_article_tweet_consumption_enabled': True,
-                            'tweet_awards_web_tipping_enabled': False,
-                            'creator_subscriptions_quote_tweet_preview_enabled': False,
-                            'longform_notetweets_rich_text_read_enabled': True,
-                            'longform_notetweets_inline_media_enabled': True,
-                            'articles_preview_enabled': True,
-                            'rweb_video_timestamps_enabled': True,
-                            'rweb_tipjar_consumption_enabled': True,
-                            'responsive_web_graphql_exclude_directive_enabled': True,
-                            'verified_phone_label_enabled': False,
-                            'freedom_of_speech_not_reach_fetch_enabled': True,
-                            'standardized_nudges_misinfo': True,
-                            'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled': True,
-                            'responsive_web_graphql_skip_user_profile_image_extensions_enabled': False,
-                            'responsive_web_graphql_timeline_navigation_enabled': True,
-                            'responsive_web_enhance_cards_enabled': False
-                        },
-                        'queryId': 'oB-5XsHNAbjvARJEc8CZFw'
-                    }
-                    cf = safe_json(requests.post(url, headers=headersZ, json=json_data, timeout=10))
-                    countdown(DELAY)
-                    if 'create_tweet' in str(cf) or 'Authorization: Status is a duplicate.' in str(cf):
-                        complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
-                        json_data = {'ads_id': ads_id, 'account_id': account_id, 'async': True, 'comment_id': nos['lock']['comment_id'], 'message': comment}
-                        time.sleep(3)
-                        response = safe_json(requests.post(complete_url, headers=headers, json=json_data, timeout=10))
-                        if response.get('success') == True:
-                            dem += 1
-                            local_time = time.localtime()
-                            h = f"{local_time.tm_hour:02d}"
-                            m = f"{local_time.tm_min:02d}"
-                            s = f"{local_time.tm_sec:02d}"
-                            prices = response['data']['prices']
-                            tong += prices
-                            chuoi = (
-                                f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
-                                f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
-                                f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                f"\033[1;31mcomment\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
-                                f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
-                                f"\033[1;33m{tong} vnđ"
-                            )
-                            print(chuoi)
-                        else:
-                            skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
-                            PARAMS = {
+            if not nos or nos.get('status') != 200 or not nos.get('data'):
+                print(Fore.YELLOW + "[!] Job trống. Đợi 15s rồi thử lại...")
+                countdown(15)
+                continue
+            ads_id = nos['data']['id']
+            object_id = nos['data']['object_id']
+            type_job = nos['data']['type']
+            if type=='like':
+                            url = 'https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet'
+                            headersX = {
+                            'accept': '*/*',
+                            'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
+                            'authorization': AUTHURX,
+                            'content-type': 'application/json',
+                            'cookie': cookieX,
+                            'origin': 'https://x.com',
+                            'priority': 'u=1, i',
+                            'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+                            'sec-ch-ua-mobile': '?1',
+                            'sec-ch-ua-platform': '"Android"',
+                            'sec-fetch-dest': 'empty',
+                            'sec-fetch-mode': 'cors',
+                            'sec-fetch-site': 'same-origin',
+                            'user-agent': User_Agent,
+                            'x-client-transaction-id': 'urp5610yhQLkM+CVhUdxse7V6km/w/d0jxm8ReTQ0zYMv9OrPxn4mhIlXHxcu5p9VeJWjLh903OGJv8VyMwdt6Mnr31KuQ',
+                            'x-client-uuid': '8a14d42e-d7a8-4d47-9e60-cd596f91ad4b',
+                            'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
+                            'x-twitter-active-user': 'yes',
+                            'x-twitter-auth-type': 'OAuth2Session',
+                            'x-twitter-client-language': 'en',
+                                    }
+                            json_data = {
+                                'variables': {
+                                    'tweet_id': object_id,
+                                },
+                                'queryId': 'lI07N6Otwv1PhnEgXILM7A',
+                            }
+
+                            node = requests.post(url,headers=headersX,json=json_data).json()
+                            countdown(DELAY)
+                            if 'data' or 'has already favorited tweet' in str(node):
+                                url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
+                                json_data = {
                                 'ads_id': ads_id,
                                 'account_id': account_id,
-                                'object_id': object_id,
-                                'async': 'true',
-                                'data': 'null',
-                                'type': type_job,
-                            }
-                            checkskipjob = requests.post(skipjob, params=PARAMS).json()
-                            if checkskipjob['status'] == 200:
-                                message = checkskipjob['message']
-                                print(Fore.RED + str(message))
-                    elif 'errors' in str(cf) and 'Could not authenticate you' in str(cf):
-                        print("HET HAN COOKIE")
-                        time.sleep(2)
-                        os.remove(cookieX)
-                        return 0
+                                'async': True,
+                                }
+                                time.sleep(3)
+                                response3 = requests.post('https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs',
+                                headers=headers,
+                                json=json_data,
+                                ).json()       
+                                if response3['success']==True:
+                                    dem += 1
+                                    local_time = time.localtime()
+                                    hour = local_time.tm_hour
+                                    minute = local_time.tm_min
+                                    second = local_time.tm_sec
+
+                                    # Định dạng giờ, phút, giây
+                                    h = f"{hour:02d}"
+                                    m = f"{minute:02d}"
+                                    s = f"{second:02d}"
+                                    prices =response3['data']['prices']
+
+                                    # Cộng dồn giá trị prices vào tổng tiền
+                                    tong += prices
+
+                                    chuoi = (
+                                        f"\033[1;31m\| 033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                        f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
+                                        f"\033[1;32msuccess\033[1;31m\033[1;97m | "
+                                        f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
+                                        f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
+                                        f"\033[1;33m{tong} vnđ"
+                                    )
+                                    print(chuoi) 
+                                else:
+                                    skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
+                                    PARAMS = {
+                                    'ads_id' : ads_id,
+                                    'account_id' : account_id,
+                                    'object_id' : object_id ,
+                                    'async': 'true',
+                                    'data': 'null',
+                                    'type': type,
+                                    }
+                                    checkskipjob = ses.post(skipjob,params=PARAMS).json()
+                                    if checkskipjob['status'] == 200:
+                                        message = checkskipjob['message']
+                                        print(Fore.RED+str(message))
+                                        PARAMS = {
+                                        'ads_id' : ads_id,
+                                        'account_id' : account_id,
+                                        'object_id' : object_id ,
+                                        'async': 'true',
+                                        'data': 'null',
+                                        'type': type,
+                                        }
+                            elif 'errors' and 'Could not authenticate you' in str(node):
+                                print("HẾT HẠN COOKIE")
+                                os.remove('COOKIE'+str(account_id)+'.txt')
+                                return 0
+            elif type_job == 'follow':
+                url = 'https://x.com/i/api/1.1/friendships/create.json'
+                headersY = {
+                    'accept': '*/*',
+                    'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
+                    'authorization': AUTHURX,
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'cookie': cookieX,
+                    'origin': 'https://x.com',
+                    'priority': 'u=1, i',
+                    'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+                    'sec-ch-ua-mobile': '?1',
+                    'sec-ch-ua-platform': '"Android"',
+                    'sec-fetch-dest': 'empty',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-site': 'same-origin',
+                    'user-agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36',
+                    'x-client-transaction-id': 'MPwo7xERotqe3xFS4oEGGDju3YMFR9v2gW2dSTZ/c2S4KYhQfp5ZmZYR/KcwzeyIYp3GBjKulQYFzsWftgEm6c7v0StkMw',
+                    'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
+                    'x-twitter-active-user': 'yes',
+                    'x-twitter-auth-type': 'OAuth2Session',
+                    'x-twitter-client-language': 'en',
+                }
+                data = {
+                    'include_profile_interstitial_type': '1',
+                    'include_blocking': '1',
+                    'include_blocked_by': '1',
+                    'include_followed_by': '1',
+                    'include_want_retweets': '1',
+                    'include_mute_edge': '1',
+                    'include_can_dm': '1',
+                    'include_can_media_tag': '1',
+                    'include_ext_is_blue_verified': '1',
+                    'include_ext_verified_type': '1',
+                    'include_ext_profile_image_shape': '1',
+                    'skip_status': '1',
+                    'user_id': object_id,
+                }
+                response2 = safe_json(requests.post('https://x.com/i/api/1.1/friendships/create.json',headers=headersY, data=data, timeout=10))
+                countdown(DELAY)
+                if 'id' in str(response2):
+                    complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
+                    json_data = {'ads_id': ads_id, 'account_id': account_id, 'async': True}
+                    time.sleep(3)
+                    response = safe_json(requests.post(complete_url, headers=headers, json=json_data, timeout=10))
+                    if response.get('success') == True:
+                        dem += 1
+                        local_time = time.localtime()
+                        h = f"{local_time.tm_hour:02d}"
+                        m = f"{local_time.tm_min:02d}"
+                        s = f"{local_time.tm_sec:02d}"
+                        prices = response['data']['prices']
+                        tong += prices
+                        chuoi = (f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                 f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
+                                 f"\033[1;32msuccess\033[1;31m\033[1;97m | "
+                                 f"\033[1;31mfollow\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
+                                 f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
+                                 f"\033[1;33m{tong} vnđ")
+                        print(chuoi)
+                    else:
+                        skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
+                        PARAMS = {'ads_id': ads_id, 
+                                  'account_id': account_id, 
+                                  'object_id': object_id,
+                                  'async': 'true', 
+                                  'data': 'null', 
+                                  'type': type_job
+                                  }
+                        checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
+                        if checkskipjob.get('status') == 200:
+                            message = checkskipjob.get('message', '')
+                            print(Fore.RED + str(message))
+                elif 'errors' in str(response2) and 'Could not authenticate you' in str(response2):
+                    print(Fore.RED + "HẾT HẠN COOKIE")
+                    time.sleep(2)
+                    if os.path.exists(cookie_file):
+                        os.remove(cookie_file)
+                    if os.path.exists(auth_file):
+                        os.remove(auth_file)
+                    return 0
+            elif type_job == 'comment':
+                comment = nos['lock']['message']
+                url = 'https://x.com/i/api/graphql/oB-5XsHNAbjvARJEc8CZFw/CreateTweet'
+                headersZ = {
+                    'accept': '*/*',
+                    'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
+                    'authorization': AUTHURX,
+                    'content-type': 'application/json',
+                    'cookie': cookieX,
+                    'origin': 'https://x.com',
+                    'priority': 'u=1, i',
+                    'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+                    'sec-ch-ua-mobile': '?1',
+                    'sec-ch-ua-platform': '"Android"',
+                    'sec-fetch-dest': 'empty',
+                    'sec-fetch-mode': 'cors',
+                    'sec-fetch-site': 'same-origin',
+                    'user-agent': User_Agent,
+                    'x-client-transaction-id': 'urp5610yhQLkM+CVhUdxse7V6km/w/d0jxm8ReTQ0zYMv9OrPxn4mhIlXHxcu5p9VeJWjLh903OGJv8VyMwdt6Mnr31KuQ',
+                    'x-client-uuid': '8a14d42e-d7a8-4d47-9e60-cd596f91ad4b',
+                    'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
+                    'x-twitter-active-user': 'yes',
+                    'x-twitter-auth-type': 'OAuth2Session',
+                    'x-twitter-client-language': 'en',
+                }
+                json_data = {
+                    'variables': {
+                        'tweet_text': comment,
+                        'reply': {'in_reply_to_tweet_id': object_id, 'exclude_reply_user_ids': []},
+                        'dark_request': False,
+                        'media': {'media_entities': [], 'possibly_sensitive': False},
+                        'semantic_annotation_ids': []
+                    },
+                    'features': {
+                        'communities_web_enable_tweet_community_results_fetch': True,
+                        'c9s_tweet_anatomy_moderator_badge_enabled': True,
+                        'tweetypie_unmention_optimization_enabled': True,
+                        'responsive_web_edit_tweet_api_enabled': True,
+                        'graphql_is_translatable_rweb_tweet_is_translatable_enabled': True,
+                        'view_counts_everywhere_api_enabled': True,
+                        'longform_notetweets_consumption_enabled': True,
+                        'responsive_web_twitter_article_tweet_consumption_enabled': True,
+                        'tweet_awards_web_tipping_enabled': False,
+                        'creator_subscriptions_quote_tweet_preview_enabled': False,
+                        'longform_notetweets_rich_text_read_enabled': True,
+                        'longform_notetweets_inline_media_enabled': True,
+                        'articles_preview_enabled': True,
+                        'rweb_video_timestamps_enabled': True,
+                        'rweb_tipjar_consumption_enabled': True,
+                        'responsive_web_graphql_exclude_directive_enabled': True,
+                        'verified_phone_label_enabled': False,
+                        'freedom_of_speech_not_reach_fetch_enabled': True,
+                        'standardized_nudges_misinfo': True,
+                        'tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled': True,
+                        'responsive_web_graphql_skip_user_profile_image_extensions_enabled': False,
+                        'responsive_web_graphql_timeline_navigation_enabled': True,
+                        'responsive_web_enhance_cards_enabled': False
+                    },
+                    'queryId': 'oB-5XsHNAbjvARJEc8CZFw'
+                }
+                cf = safe_json(requests.post(url, headers=headersZ, json=json_data, timeout=10))
+                countdown(DELAY)
+                if ('create_tweet' in str(cf)) or ('Authorization: Status is a duplicate.' in str(cf)):
+                    complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
+                    json_data = {'ads_id': ads_id, 'account_id': account_id, 'async': True, 'comment_id': nos['lock']['comment_id'], 'message': comment}
+                    time.sleep(3)
+                    response = safe_json(requests.post(complete_url, headers=headers, json=json_data, timeout=10))
+                    if response.get('success') == True:
+                        dem += 1
+                        local_time = time.localtime()
+                        h = f"{local_time.tm_hour:02d}"
+                        m = f"{local_time.tm_min:02d}"
+                        s = f"{local_time.tm_sec:02d}"
+                        prices = response['data']['prices']
+                        tong += prices
+                        chuoi = (f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                 f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
+                                 f"\033[1;32msuccess\033[1;31m\033[1;97m | "
+                                 f"\033[1;31mcomment\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
+                                 f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
+                                 f"\033[1;33m{tong} vnđ")
+                        print(chuoi)
+                    else:
+                        skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
+                        PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id, 'async': 'true', 'data': 'null', 'type': type_job}
+                        checkskipjob = safe_json(requests.post(skipjob, params=PARAMS, timeout=10))
+                        if checkskipjob.get('status') == 200:
+                            message = checkskipjob.get('message', '')
+                            print(Fore.RED + str(message))
+                elif 'errors' in str(cf) and 'Could not authenticate you' in str(cf):
+                    print(Fore.RED + "HẾT HẠN COOKIE")
+                    time.sleep(2)
+                    if os.path.exists(cookie_file):
+                        os.remove(cookie_file)
+                    if os.path.exists(auth_file):
+                        os.remove(auth_file)
+                    return 0
             else:
-                print(nos['message'])
+                print(nos.get('message', 'Job không hợp lệ'))
                 countdown(15)
         except Exception as e:
             print(Fore.RED + f"Lỗi: {e}")
             continue
+
+    print(Fore.GREEN + f"\n[✅] Đã hoàn thành {dem} job. Tổng tiền: {tong} vnđ")
+
 
 
 
