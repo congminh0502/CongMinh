@@ -66,8 +66,8 @@ def TWITTER():
             print(Fore.RED + f"[❌] POST lỗi: {e}")
             return {}
 
-    
 
+   
     # Kiểm tra cookie còn sống bằng cách gọi API settings của Twitter
     def is_cookie_alive(headers_tw):
         test_url = "https://x.com/i/api/1.1/account/settings.json"
@@ -189,102 +189,51 @@ def TWITTER():
             ads_id = nos['data']['id']
             object_id = nos['data']['object_id']
             type_job = nos['data']['type']
-            if type=='like':
-                            url = 'https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet'
-                            headersX = {
-                            'accept': '*/*',
-                            'accept-language': 'vi,en-US;q=0.9,en;q=0.8',
-                            'authorization': AUTHURX,
-                            'content-type': 'application/json',
-                            'cookie': cookieX,
-                            'origin': 'https://x.com',
-                            'priority': 'u=1, i',
-                            'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-                            'sec-ch-ua-mobile': '?1',
-                            'sec-ch-ua-platform': '"Android"',
-                            'sec-fetch-dest': 'empty',
-                            'sec-fetch-mode': 'cors',
-                            'sec-fetch-site': 'same-origin',
-                            'user-agent': User_Agent,
-                            'x-client-transaction-id': 'urp5610yhQLkM+CVhUdxse7V6km/w/d0jxm8ReTQ0zYMv9OrPxn4mhIlXHxcu5p9VeJWjLh903OGJv8VyMwdt6Mnr31KuQ',
-                            'x-client-uuid': '8a14d42e-d7a8-4d47-9e60-cd596f91ad4b',
-                            'x-csrf-token': cookieX.split('ct0=')[1].split(';')[0],
-                            'x-twitter-active-user': 'yes',
-                            'x-twitter-auth-type': 'OAuth2Session',
-                            'x-twitter-client-language': 'en',
-                                    }
-                            json_data = {
-                                'variables': {
-                                    'tweet_id': object_id,
-                                },
-                                'queryId': 'lI07N6Otwv1PhnEgXILM7A',
-                            }
-
-                            node = requests.post(url,headers=headersX,json=json_data).json()
-                            countdown(DELAY)
-                            if 'data' or 'has already favorited tweet' in str(node):
-                                url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
-                                json_data = {
-                                'ads_id': ads_id,
-                                'account_id': account_id,
-                                'async': True,
-                                }
-                                time.sleep(3)
-                                response3 = requests.post('https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs',
-                                headers=headers,
-                                json=json_data,
-                                ).json()       
-                                if response3['success']==True:
-                                    dem += 1
-                                    local_time = time.localtime()
-                                    hour = local_time.tm_hour
-                                    minute = local_time.tm_min
-                                    second = local_time.tm_sec
-
-                                    # Định dạng giờ, phút, giây
-                                    h = f"{hour:02d}"
-                                    m = f"{minute:02d}"
-                                    s = f"{second:02d}"
-                                    prices =response3['data']['prices']
-
-                                    # Cộng dồn giá trị prices vào tổng tiền
-                                    tong += prices
-
-                                    chuoi = (
-                                        f"\033[1;31m\| 033[1;36m{dem}\033[1;31m\033[1;97m | "
-                                        f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
-                                        f"\033[1;32msuccess\033[1;31m\033[1;97m | "
-                                        f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m |"
-                                        f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
-                                        f"\033[1;33m{tong} vnđ"
-                                    )
-                                    print(chuoi) 
-                                else:
-                                    skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
-                                    PARAMS = {
-                                    'ads_id' : ads_id,
-                                    'account_id' : account_id,
-                                    'object_id' : object_id ,
-                                    'async': 'true',
-                                    'data': 'null',
-                                    'type': type,
-                                    }
-                                    checkskipjob = ses.post(skipjob,params=PARAMS).json()
-                                    if checkskipjob['status'] == 200:
-                                        message = checkskipjob['message']
-                                        print(Fore.RED+str(message))
-                                        PARAMs = {
-                                        'ads_id' : ads_id,
-                                        'account_id' : account_id,
-                                        'object_id' : object_id ,
-                                        'async': 'true',
-                                        'data': 'null',
-                                        'type': type,
-                                        }
-                            elif 'errors' and 'Could not authenticate you' in str(node):
-                                print("HẾT HẠN COOKIE")
-                                os.remove('COOKIE'+str(account_id)+'.txt')
-                                return 0
+            if type_job == 'like':
+                url = 'https://x.com/i/api/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet'
+                json_data = {
+                    'variables': {'tweet_id': object_id},
+                    'queryId': 'lI07N6Otwv1PhnEgXILM7A'
+                }
+                node = safe_json(requests.post(url, headers=headersX, json=json_data, timeout=10))
+                countdown(DELAY)
+                # Kiểm tra phản hồi của Twitter một cách cụ thể
+                if ('data' in node and node['data'] is not None) or ('has already favorited tweet' in str(node)):
+                    complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
+                    json_data_complete = {'ads_id': ads_id, 'account_id': account_id, 'async': True}
+                    time.sleep(3)
+                    response3 = safe_json(requests.post(complete_url, headers=headers, json=json_data_complete, timeout=10))
+                    if response3.get('success') == True:
+                        dem += 1
+                        local_time = time.localtime()
+                        h = f"{local_time.tm_hour:02d}"
+                        m = f"{local_time.tm_min:02d}"
+                        s = f"{local_time.tm_sec:02d}"
+                        prices = response3['data']['prices']
+                        tong += prices
+                        chuoi = (f"\033[1;31m\033[1;36m{dem}\033[1;31m\033[1;97m | "
+                                 f"\033[1;33m{h}:{m}:{s}\033[1;31m\033[1;97m | "
+                                 f"\033[1;32msuccess\033[1;31m\033[1;97m | "
+                                 f"\033[1;31mlike\033[1;31m\033[1;32m\033[1;32m\033[1;97m | "
+                                 f"\033[1;32m Ẩn ID\033[1;97m | \033[1;32m+{prices} \033[1;97m| "
+                                 f"\033[1;33m{tong} vnđ")
+                        print(chuoi)
+                    else:
+                        skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
+                        PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
+                                  'async': 'true', 'data': 'null', 'type': type_job}
+                        checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
+                        if checkskipjob.get('status') == 200:
+                            message = checkskipjob.get('message', '')
+                            print(Fore.RED + str(message))
+                elif 'errors' in str(node) and 'Could not authenticate you' in str(node):
+                    print(Fore.RED + "HẾT HẠN COOKIE")
+                    time.sleep(2)
+                    if os.path.exists(cookie_file):
+                        os.remove(cookie_file)
+                    if os.path.exists(auth_file):
+                        os.remove(auth_file)
+                    return 0
             elif type_job == 'follow':
                 url = 'https://x.com/i/api/1.1/friendships/create.json'
                 headersY = {
@@ -323,7 +272,8 @@ def TWITTER():
                     'skip_status': '1',
                     'user_id': object_id,
                 }
-                response2 = safe_json(requests.post('https://x.com/i/api/1.1/friendships/create.json',headers=headersY, data=data, timeout=10))
+                response2 = safe_json(requests.post('https://x.com/i/api/1.1/friendships/create.json',
+                                                     headers=headersY, data=data, timeout=10))
                 countdown(DELAY)
                 if 'id' in str(response2):
                     complete_url = 'https://gateway.golike.net/api/advertising/publishers/twitter/complete-jobs'
@@ -347,13 +297,8 @@ def TWITTER():
                         print(chuoi)
                     else:
                         skipjob = 'https://gateway.golike.net/api/advertising/publishers/twitter/skip-jobs'
-                        PARAMS = {'ads_id': ads_id, 
-                                  'account_id': account_id, 
-                                  'object_id': object_id,
-                                  'async': 'true', 
-                                  'data': 'null', 
-                                  'type': type_job
-                                  }
+                        PARAMS = {'ads_id': ads_id, 'account_id': account_id, 'object_id': object_id,
+                                  'async': 'true', 'data': 'null', 'type': type_job}
                         checkskipjob = safe_json(ses.post(skipjob, params=PARAMS, timeout=10))
                         if checkskipjob.get('status') == 200:
                             message = checkskipjob.get('message', '')
