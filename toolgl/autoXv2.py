@@ -273,7 +273,7 @@ def TWITTER():
                                     if checkskipjob['status'] == 200:
                                         message = checkskipjob['message']
                                         print(Fore.RED+str(message))
-                                        PARAMS = {
+                                        PARAMs = {
                                         'ads_id' : ads_id,
                                         'account_id' : account_id,
                                         'object_id' : object_id ,
